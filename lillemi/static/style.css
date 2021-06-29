@@ -19,3 +19,31 @@ body {
   margin-bottom: .7em;
   font-size: 6vw;
 }
+
+#form_login span {
+  display: inline-block;
+  width: 7em;
+  text-align: right;
+}
+
+button {
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  text-decoration: none;
+  width: 7em;
+  height: 3em;
+  cursor: pointer;
+  border-radius: 7px;
+}
+
+.button_holder {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+form div {
+  margin: .3em 0em 0em 0em;
+}

@@ -8,9 +8,15 @@ app = Flask(__name__)
 def index():
     return redirect(url_for('born_yet'))
 
+
 @app.route('/isshebornyet')
 def born_yet():
     return render_template('born_yet.html', born=False)
+
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
 
 
 def run():
