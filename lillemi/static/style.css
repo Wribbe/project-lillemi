@@ -1,3 +1,21 @@
-h1 {
-  color: blue;
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#born_answer {
+  font-size: 10vw;
+}
+
+#born_question {
+  margin-bottom: .7em;
+  font-size: 6vw;
 }

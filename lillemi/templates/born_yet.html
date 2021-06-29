@@ -1,4 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-  <h1> {{ "YES" if born else "NO" }} </h1>
+  <div id="born_question">
+    <span>Is Lillemi born?</span>
+  </div>
+  <span id="born_answer"> {{ "YES" if born else "Not Yet" }} </span>
 {% endblock %}
