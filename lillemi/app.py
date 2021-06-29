@@ -1,12 +1,16 @@
 import os
-from flask import render_template, Flask
+from flask import render_template, Flask, redirect, url_for
 
 app = Flask(__name__)
 
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return redirect(url_for('born_yet'))
+
+@app.route('/isshebornyet')
+def born_yet():
+    return render_template('born_yet.html', born=False)
 
 
 def run():
