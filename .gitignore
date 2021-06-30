@@ -3,3 +3,4 @@
 venv
 build
 *.sqlite3
+secret.txt

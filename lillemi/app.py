@@ -2,8 +2,15 @@ import os
 from flask import render_template, Flask, redirect, url_for
 
 from lillemi import db
+from pathlib import Path
+from secrets import token_hex
+
+PATH_SECRET = Path(db.PATH_ROOT) / 'secret.txt'
+if not PATH_SECRET.is_file():
+    PATH_SECRET.write_text(token_hex(32))
 
 app = Flask(__name__)
+app.secret_key = PATH_SECRET.read_text()
 
 with app.app_context():
     db.init()
