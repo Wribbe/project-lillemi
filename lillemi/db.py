@@ -5,7 +5,7 @@ from flask import g, current_app
 from pathlib import Path
 
 PATH_ROOT = Path(__file__).parent.parent
-PATH_DATA = os.environ.get('LILLEMI_PATH_DATA', PATH_ROOT)
+PATH_DATA = Path(os.environ.get('LILLEMI_PATH_DATA', PATH_ROOT))
 
 if not PATH_DATA.is_dir():
     PATH_DATA.mkdir()
