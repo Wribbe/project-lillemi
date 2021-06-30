@@ -1,2 +1,3 @@
 graft lillemi/templates
 graft lillemi/static
+include lillemi/schema.sql
