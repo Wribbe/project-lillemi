@@ -1,8 +1,12 @@
 import os
 from flask import render_template, Flask, redirect, url_for
 
+from lillemi import db
+
 app = Flask(__name__)
 
+with app.app_context():
+    db.init()
 
 @app.route('/')
 def index():
