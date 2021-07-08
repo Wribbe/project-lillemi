@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+  <ul>
+    <li> Database:
+      <ul>
+        <li>Version: {{db_version}}</li>
+        <li>Available schemas: {{ schemas | join(',') }}</li>
+      </ul>
+    </li>
+  </ul>
+{% endblock %}

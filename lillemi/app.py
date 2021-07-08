@@ -33,7 +33,11 @@ def login():
 
 @app.route('/info')
 def info():
-    return f"db version: {db.version()}"
+    return render_template(
+      'info.html',
+      db_version=db.version(),
+      schemas=db.schemas()
+    )
 
 
 def run():

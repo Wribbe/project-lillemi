@@ -4,7 +4,9 @@ import sqlite3
 from flask import g, current_app
 from pathlib import Path
 
+FORMAT_DB_SCHEMA = "{:04d}_schema.sql"
 PATH_ROOT = Path(__file__).parent.parent
+PATH_SCHEMAS = PATH_ROOT / 'lillemi' / 'schemas'
 PATH_DATA = Path(os.environ.get('LILLEMI_PATH_DATA', PATH_ROOT))
 
 if not PATH_DATA.is_dir():
@@ -38,6 +40,16 @@ def execute(query, vals=None, fetchone=False):
 
 def commit():
     get().commit()
+
+
+def schemas():
+    schemas = {}
+    for file in  sorted(PATH_SCHEMAS.iterdir()):
+        if not file.suffix == ".sql":
+            continue
+        version = int(file.stem.split('_')[0])
+        schemas[version] = file
+    return schemas
 
 
 def version():
