@@ -15,6 +15,7 @@ app.secret_key = PATH_SECRET.read_text()
 with app.app_context():
     db.init()
 
+
 @app.route('/')
 def index():
     return redirect(url_for('born_yet'))
@@ -28,6 +29,11 @@ def born_yet():
 @app.route('/login')
 def login():
     return render_template('login.html')
+
+
+@app.route('/info')
+def info():
+    return f"db version: {db.version()}"
 
 
 def run():

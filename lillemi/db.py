@@ -38,3 +38,7 @@ def execute(query, vals=None, fetchone=False):
 
 def commit():
     get().commit()
+
+
+def version():
+    return execute("PRAGMA user_version", fetchone=True)['user_version']
