@@ -4,7 +4,7 @@ import sqlite3
 from flask import g, current_app
 from pathlib import Path
 
-FORMAT_DB_SCHEMA = "{:04d}.py"
+DB_FORMAT_SCHEMA = "{:04d}.py"
 PATH_ROOT = Path(__file__).parent.parent
 PATH_SCHEMAS = PATH_ROOT / 'lillemi' / 'migrations'
 PATH_DATA = Path(os.environ.get('LILLEMI_PATH_DATA', PATH_ROOT))
@@ -12,16 +12,20 @@ PATH_DATA = Path(os.environ.get('LILLEMI_PATH_DATA', PATH_ROOT))
 if not PATH_DATA.is_dir():
     PATH_DATA.mkdir()
 
-PATH_DB = PATH_DATA / 'lillemi.sqlite3'
+DB_PATH = PATH_DATA / 'lillemi.sqlite3'
+DB_CONN = None
 
 
 def get():
-    init()
+    global DB_CONN
     db = getattr(g, '_database', None) if g else None
     if db is None:
-        db = sqlite3.connect(PATH_DB)
+        db = sqlite3.connect(DB_PATH)
         if g:
             g._database = db
+        if not DB_CONN:
+            DB_CONN = db
+            init()
     db.row_factory = sqlite3.Row
     return db
 
