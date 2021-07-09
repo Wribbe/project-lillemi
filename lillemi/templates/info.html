@@ -5,6 +5,7 @@
       <ul>
         <li>Current version: {{db_version}}</li>
         <li>Max available version: {{ schema_versions | max }}</li>
+        {% if tables %}
         <li>Tables:
           <ul>
             {% for table in tables %}
@@ -12,6 +13,7 @@
             {% endfor %}
           </ul>
         </li>
+        {% endif %}
       </ul>
     </li>
   </ul>

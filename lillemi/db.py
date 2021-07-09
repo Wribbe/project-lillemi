@@ -79,7 +79,7 @@ def schema_versions():
 
 def tables():
     q = execute_one("SELECT name from sqlite_master WHERE type='table';")
-    return sorted(q['name'].splitlines())
+    return sorted(q['name'].splitlines()) if q else []
 
 
 def version():
