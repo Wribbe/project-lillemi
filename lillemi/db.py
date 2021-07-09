@@ -16,9 +16,11 @@ PATH_DB = PATH_DATA / 'lillemi.sqlite3'
 
 
 def get():
-    db = getattr(g, '_database', None)
+    db = getattr(g, '_database', None) if g else None
     if db is None:
-        db = g._database = sqlite3.connect(PATH_DB)
+        db = sqlite3.connect(PATH_DB)
+        if g:
+            g._database = db
     db.row_factory = sqlite3.Row
     return db
 
