@@ -3,8 +3,15 @@
   <ul>
     <li> Database:
       <ul>
-        <li>Version: {{db_version}}</li>
-        <li>Available schemas: {{ schemas | join(',') }}</li>
+        <li>Current version: {{db_version}}</li>
+        <li>Max available version: {{ schema_versions | max }}</li>
+        <li>Tables:
+          <ul>
+            {% for table in tables %}
+              <li>{{ table }}</li>
+            {% endfor %}
+          </ul>
+        </li>
       </ul>
     </li>
   </ul>

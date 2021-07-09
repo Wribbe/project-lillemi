@@ -13,7 +13,7 @@ app = Flask(__name__)
 app.secret_key = PATH_SECRET.read_text()
 
 with app.app_context():
-    db.init()
+    from lillemi import commands
 
 
 @app.route('/')
@@ -36,7 +36,8 @@ def info():
     return render_template(
       'info.html',
       db_version=db.version(),
-      schemas=db.schemas()
+      schema_versions=db.schema_versions(),
+      tables=db.tables(),
     )
 
 
