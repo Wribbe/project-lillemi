@@ -1,5 +1,6 @@
 import os
 import sqlite3
+import importlib
 
 from flask import g, current_app
 from pathlib import Path
@@ -15,17 +16,12 @@ if not PATH_DATA.is_dir():
 DB_PATH = PATH_DATA / 'lillemi.sqlite3'
 DB_CONN = None
 
-
 def get():
-    global DB_CONN
     db = getattr(g, '_database', None) if g else None
     if db is None:
         db = sqlite3.connect(DB_PATH)
         if g:
             g._database = db
-        if not DB_CONN:
-            DB_CONN = db
-            init()
     db.row_factory = sqlite3.Row
     return db
 
@@ -33,17 +29,16 @@ def get():
 def init():
     versions = schema_versions()
     current_version = version()
-    verisons_max = max(versions)
+    version_max = max(versions)
 
-    if current_version == verisons_max:
-        print("No pending migrations available.")
+    if current_version >= version_max:
         return
 
     print(
-        f"Current database version is {current_version}, {verisons_max}" +\
+        f"Current database version is {current_version}, {version_max}" +\
         " available, performing database migrations."
     )
-    while (version() < verisons_max):
+    while (version() < version_max):
         upgrade()
 
 
@@ -87,8 +82,59 @@ def version():
 
 
 def upgrade():
-    print("UPGRADE")
+    set_schema(version() + 1)
 
 
 def downgrade():
-    print("DOWNGRADE")
+    set_schema(version() - 1)
+
+
+def set_schema(ver):
+
+    current = version()
+    versions = schema_versions()
+
+    upgrade = ver > current
+    print(f"Preparing to do a schema {'upgrade' if upgrade else 'downgrade'}.")
+
+    if ver == current:
+        print("Already at version {current}, aborting.")
+        return
+
+    migration_version = ver if upgrade else current
+
+    if migration_version not in versions:
+        print(f"Version {migration_version} not available, aborting.")
+        return
+
+    migration = import_migration(migration_version)
+    try:
+        print(
+            f"{'Up' if upgrade else 'Down'}grading database schema from" +\
+            f" {current} -> {ver}"
+        )
+        migration.upgrade() if upgrade else migration.downgrade()
+        set_version(ver)
+    except:
+        set_version(current)
+        raise
+
+
+def import_migration(version):
+
+    versions = schema_versions()
+    if version not in versions:
+        err = f"Cannot upgrade to version: {version}, no such version"
+        raise RuntimeError(err)
+
+    spec = importlib.util.spec_from_file_location(
+        "migration",
+        versions[version]
+    )
+    migration = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(migration)
+    return migration
+
+
+def set_version(version):
+    get().execute(f"PRAGMA user_version = {version}")
