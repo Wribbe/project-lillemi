@@ -138,3 +138,20 @@ def import_migration(version):
 
 def set_version(version):
     get().execute(f"PRAGMA user_version = {version}")
+
+
+def ip_to_int(ip_string):
+    value = 0
+    for p, num in enumerate(reversed(ip_string.split('.'))):
+        value += pow(256, p)*int(num)
+    return value
+
+
+def int_to_ip(ip_as_int):
+    tokens = []
+    num_tokens = 4
+    for exponent in reversed(range(num_tokens)):
+        exp = pow(256, exponent)
+        tokens.append(int(ip_as_int / exp))
+        ip_as_int -= tokens[-1] * exp
+    return '.'.join([str(t) for t in tokens])
