@@ -13,7 +13,7 @@
         <td> {{ visit.datetime }} </td>
         <td> {{ visit.ip }} </td>
         <td> {{ visit.method }} </td>
-        <td> {{ visit.endpoint }} </td>
+        <td> {{ visit.endpoint | truncate(30, true, '...') }} </td>
       </th>
     {% endfor %}
   </table>
