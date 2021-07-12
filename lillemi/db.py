@@ -155,3 +155,19 @@ def int_to_ip(ip_as_int):
         tokens.append(int(ip_as_int / exp))
         ip_as_int -= tokens[-1] * exp
     return '.'.join([str(t) for t in tokens])
+
+
+def log_visit(endpoint, ip, method):
+    execute(
+        "INSERT INTO visit (endpoint, ip, method) VALUES (?,?,?);",
+        (endpoint, ip_to_int(ip), method)
+    )
+    commit()
+
+
+def visits():
+    visits = []
+    for visit in execute("SELECT * FROM visit;"):
+        visits.append(dict(visit))
+        visits[-1]['ip'] = int_to_ip(visits[-1]['ip'])
+    return visits

@@ -4,6 +4,7 @@ def upgrade():
   db.executescript(f"""
     BEGIN TRANSACTION;
     ALTER TABLE visit ADD COLUMN endpoint TEXT;
+    ALTER TABLE visit ADD COLUMN method TEXT;
     COMMIT;
   """)
 

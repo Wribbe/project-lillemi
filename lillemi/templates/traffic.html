@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+  <h3>Traffic:</h3>
+  <table id="table-traffic">
+    {% for visit in visits %}
+      <tr>
+        <td> {{ visit.datetime }} </td>
+        <td> {{ visit.ip }} </td>
+        <td> {{ visit.method }} </td>
+        <td> {{ visit.endpoint }} </td>
+      </th>
+    {% endfor %}
+  </table>
+{% endblock %}
