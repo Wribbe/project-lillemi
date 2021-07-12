@@ -11,6 +11,11 @@ if not PATH_SECRET.is_file():
 
 app = Flask(__name__)
 app.secret_key = PATH_SECRET.read_text()
+app.config.update(
+  SESSION_COOKIE_SECURE=True,
+  SESSION_COOKIE_HTTPONLY=True,
+  SESSION_COOKIE_SAMESITE='Lax',
+)
 
 with app.app_context():
     from lillemi import commands
