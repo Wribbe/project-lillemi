@@ -1,5 +1,5 @@
 import os
-from flask import render_template, Flask, redirect, url_for
+from flask import render_template, Flask, redirect, url_for, request
 
 from lillemi import db
 from pathlib import Path
@@ -14,6 +14,20 @@ app.secret_key = PATH_SECRET.read_text()
 
 with app.app_context():
     from lillemi import commands
+
+
+@app.after_request
+def after_request(response):
+
+  def path_should_be_ignored():
+    ignored_paths = ['/favicon', '/static/']
+    if any([request.full_path.startswith(p) for p in ignored_paths]):
+      return True
+    return False
+
+  if not path_should_be_ignored():
+    db.log_visit(request.full_path, request.remote_addr, request.method)
+  return response
 
 
 @app.route('/')
@@ -39,6 +53,11 @@ def info():
       schema_versions=db.schema_versions(),
       tables=db.tables(),
     )
+
+
+@app.route('/info/traffic')
+def traffic():
+  return render_template('traffic.html', visits=db.visits())
 
 
 def run():
