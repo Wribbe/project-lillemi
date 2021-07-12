@@ -47,3 +47,14 @@ button {
 form div {
   margin: .3em 0em 0em 0em;
 }
+
+#table-traffic {
+  border-collapse: collapse;
+  width: 50em;
+  max-width: 80vw;
+  text-align: left;
+}
+
+#table-traffic tr:nth-child(odd) {
+  background-color: lightgray;
+}
