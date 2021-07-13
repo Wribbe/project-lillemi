@@ -1,5 +1,5 @@
 import os
-from flask import render_template, Flask, redirect, url_for, request
+from flask import render_template, Flask, redirect, url_for, request, session
 
 from lillemi import db
 from pathlib import Path
@@ -69,3 +69,10 @@ def run():
     os.environ['FLASK_ENV'] = 'development'
     db.init()
     app.run('0.0.0.0', debug=True)
+
+
+def _csrf_token():
+  return session.get('csrf_token', "")
+
+
+app.jinja_env.globals.update({'csrf_token': _csrf_token})
