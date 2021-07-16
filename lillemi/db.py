@@ -17,9 +17,10 @@ DB_PATH = PATH_DATA / 'lillemi.sqlite3'
 DB_CONN = None
 
 def get():
-    db = getattr(g, '_database', None) if g else None
+    global DB_CONN
+    db = getattr(g, '_database', None) if g else DB_CONN
     if db is None:
-        db = sqlite3.connect(DB_PATH)
+        db = DB_CONN = sqlite3.connect(DB_PATH)
         if g:
             g._database = db
     db.row_factory = sqlite3.Row
