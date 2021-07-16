@@ -1,9 +1,11 @@
 import os
 import sqlite3
 import importlib
+import hashlib
 
 from flask import g, current_app
 from pathlib import Path
+from secrets import token_hex, compare_digest
 
 DB_FORMAT_SCHEMA = "{:04d}.py"
 PATH_ROOT = Path(__file__).parent.parent
@@ -15,6 +17,9 @@ if not PATH_DATA.is_dir():
 
 DB_PATH = PATH_DATA / 'lillemi.sqlite3'
 DB_CONN = None
+
+LEN_SALT = 16
+
 
 def get():
     global DB_CONN
@@ -45,12 +50,9 @@ def init():
 
 def execute(query, vals=None, fetchone=False):
     q = get().cursor().execute(query, vals if vals else ())
+    if query.lower().split(' ')[0] in ['insert', 'update', 'delete']:
+        return q
     return q.fetchone() if fetchone else q.fetchall()
-
-
-def execute_one(*args, **kwargs):
-    kwargs['fetchone'] = True
-    return execute(*args, **kwargs)
 
 
 def executescript(script):
@@ -172,3 +174,43 @@ def visits():
         visits.append(dict(visit))
         visits[-1]['ip'] = int_to_ip(visits[-1]['ip'])
     return visits
+
+
+def secret_hash(secret, salt=None):
+    iterations = int(1e6)
+    s = salt if salt else token_hex(LEN_SALT)
+    h = hashlib.pbkdf2_hmac('sha256', secret.encode(), s.encode(), iterations)
+    return f"{s}{h.hex()}"
+
+
+def user_get(name):
+    return execute(
+        "SELECT * FROM user WHERE name = (?)", (name,),
+        fetchone=True
+    )
+
+
+def user_set(name, secret):
+    return execute(
+        "INSERT INTO user (name, secret) VALUES (?, ?)",
+        (name, secret_hash(secret))
+    )
+
+
+def salt_from_hash(hashed_secret):
+    return hashed_secret[:LEN_SALT*2]
+
+
+def user_auth(name, secret):
+    u = user_get(name)
+    if not u:
+        return False
+    secret_in_db = u['secret']
+    salt = salt_from_hash(secret_in_db)
+    generated = secret_hash(secret, salt=salt)
+    return compare_digest(generated, secret_in_db)
+
+
+def secret_set(name, secret):
+    secret = secret_hash(secret)
+    execute("UPDATE user SET secret = (?) WHERE name = (?)", (secret, name))
