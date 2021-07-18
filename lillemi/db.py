@@ -225,14 +225,16 @@ def role_get(name):
 
 
 def role_assign(user, role):
-    if role_check(user, role):
-        return
+    role = role if type(role) == list else [role]
     u = user_get(user)
-    r = role_get(role)
-    execute(
-        "INSERT INTO role_assignment (user, role) VALUES (?,?)",
-        (u['id'], r['id'])
-    )
+    for role_name in role:
+        if role_check(user, role_name):
+            continue
+        r = role_get(role_name)
+        execute(
+            "INSERT INTO role_assignment (user, role) VALUES (?,?)",
+            (u['id'], r['id'])
+        )
 
 
 def role_check(user, role):
