@@ -87,3 +87,43 @@ def test_user_auth():
   finally:
     db.execute("DELETE FROM user WHERE name = (?);", (user,))
     db.commit()
+
+
+def test_role_get():
+  try:
+    name = 'role'
+    description = 'description'
+    db.execute(
+      "INSERT INTO role (name, description) VALUES (?,?)",
+      (name, description)
+    )
+    db.commit()
+    r = db.role_get("role")
+    assert r
+    assert r['description'] == description
+  finally:
+    db.execute("DELETE FROM role WHERE name = (?)", (name,))
+    db.commit()
+
+
+def test_role_assignment():
+  try:
+    role = 'role'
+    description = 'description'
+    user = 'user'
+    password = 'password'
+    db.execute(
+      "INSERT INTO role (name, description) VALUES (?,?)",
+      (role, description)
+    )
+    db.user_set(user, password)
+    db.role_assign(user, role)
+    db.commit()
+
+    assert db.role_check(user, role)
+
+  finally:
+    db.execute("DELETE FROM role WHERE name = (?)", (role,))
+    db.execute("DELETE FROM user WHERE name = (?)", (user,))
+    db.execute("DELETE FROM role_assignment")
+    db.commit()

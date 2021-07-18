@@ -214,3 +214,32 @@ def user_auth(name, secret):
 def secret_set(name, secret):
     secret = secret_hash(secret)
     execute("UPDATE user SET secret = (?) WHERE name = (?)", (secret, name))
+
+
+def role_get(name):
+    return execute(
+        "SELECT * FROM role WHERE name = (?)",
+        (name,),
+        fetchone=True
+    )
+
+
+def role_assign(user, role):
+    if role_check(user, role):
+        return
+    u = user_get(user)
+    r = role_get(role)
+    execute(
+        "INSERT INTO role_assignment (user, role) VALUES (?,?)",
+        (u['id'], r['id'])
+    )
+
+
+def role_check(user, role):
+    u = user_get(user)
+    r = role_get(role)
+    return execute(
+        "SELECT * FROM role_assignment WHERE user = (?) AND role = (?)",
+        (u['id'], r['id']),
+        fetchone=True
+    )
