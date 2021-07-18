@@ -245,3 +245,15 @@ def role_check(user, role):
         (u['id'], r['id']),
         fetchone=True
     )
+
+
+def users_with_role(role):
+    users = execute("""
+        SELECT user.name FROM user
+            JOIN role_assignment ra ON ra.user == user.id
+            JOIN role r ON r.id == ra.role
+            WHERE r.name = (?)
+        """,
+        (role,)
+    )
+    return [u['name'] for u in users]

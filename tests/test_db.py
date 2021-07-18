@@ -127,3 +127,31 @@ def test_role_assignment():
     db.execute("DELETE FROM user WHERE name = (?)", (user,))
     db.execute("DELETE FROM role_assignment")
     db.commit()
+
+
+def test_users_with_role():
+  roles = ['role1', 'role2', 'role3']
+  users = ['user1', 'user2', 'user3']
+
+  try:
+    for r in roles:
+      db.execute(
+        "INSERT INTO role (name, description) VALUES (?,?)",
+        (r, 'desc')
+      )
+    for u in users:
+      db.user_set(u, 'passw')
+    assignments = { user: roles[i:] for i, user in enumerate(users) }
+    correct_result = {}
+    for user, roles in assignments.items():
+      db.role_assign(user, roles)
+      for r in roles:
+        correct_result.setdefault(r, []).append(user)
+    db.commit()
+    for role, users in correct_result.items():
+      assert db.users_with_role(role) == users
+  finally:
+    db.execute("DELETE FROM user")
+    db.execute("DELETE FROM role")
+    db.execute("DELETE FROM role_assignment")
+    db.commit()
