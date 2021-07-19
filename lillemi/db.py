@@ -257,3 +257,16 @@ def users_with_role(role):
         (role,)
     )
     return [u['name'] for u in users]
+
+
+def user_roles(user):
+    user = user['name'] if type(user) != str else user
+    roles = execute("""
+        SELECT r.name FROM user
+            JOIN role_assignment ra ON ra.user == user.id
+            JOIN role r ON r.id == ra.role
+            WHERE user.name = (?)
+        """,
+        (user,)
+    )
+    return [r['name'] for r in roles]
